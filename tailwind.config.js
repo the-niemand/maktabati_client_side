@@ -12,7 +12,7 @@ export default {
       'Poppins': ["Poppins", "sans serif"],
     },
     fontWeight: {
-      bold: '600',
+      bold: '500',
     },
     screens: {
       'md': '1024px',

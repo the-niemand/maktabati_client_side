@@ -15,7 +15,7 @@ const Sidebar = () => {
                <div className='flex flex-col justify-between items-center space-y-16'>
                     <div className='flex justify-center items-center space-x-4'>
                          <img src={logo} className='w-10 h-10' alt="Logo" />
-                         <h1 className='hidden lg:block text-yellow-400 text-[21px] font-semibold font-Poppins'>Maktabati</h1>
+                         <h1 className='hidden lg:block text-yellow-400 text-[21px] font-bold font-Poppins'>Maktabati</h1>
                     </div>
                     <div className='w-full flex-col justify-between items-center space-y-5'>
                          <Sidebar_buttons
