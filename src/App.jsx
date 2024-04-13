@@ -1,13 +1,33 @@
-import { useState } from 'react'
-import Sidebar from './components/sidebar'
-import './App.css'
+import React from 'react';
+import Dashboard from './pages/Dashboard';
+import Auth from './pages/Auth';
 
-function App() {
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+
+
+const router = createBrowserRouter([
+  {
+    path: "maktabati_client_side/Dashboard/*",
+    element: (
+      <Dashboard />
+    ),
+  }, {
+    path: "maktabati_client_side/Login",
+    element: (
+      <Auth />
+    ),
+  }
+]);
+
+const App = () => {
   return (
-    <div className='flex'>
-      <Sidebar />
-    </div>
-  )
-}
+    <RouterProvider router={router} />
+  );
+};
 
-export default App
+export default App;
+
+
