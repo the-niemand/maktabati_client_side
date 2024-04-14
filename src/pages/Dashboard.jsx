@@ -1,63 +1,42 @@
 import React from 'react'
-import Sidebar from '../components/sidebar';
-import {
-     Routes,
-     Route,
-} from "react-router-dom";
+import Sidebar from '../components/sidebar'
+import { Routes, Route } from 'react-router-dom'
 
 const Dashboard = () => {
      return (
           <div className='flex'>
                <Sidebar />
-               <div className='flex-1 h-screen overflow-auto'>
+               <div>
                     <Routes>
-                         <Route exact path="/books" element={<Books />} />
-                         <Route exact path="/users" element={<User />} />
-                         <Route exact path="/borrows" element={<Borr />} />
-                         <Route exact path="/returns" element={<Retu />} />
-                         <Route exact path="/settings" element={<Sett />} />
-                         <Route exact path="/logout" element={<Log />} />
+                         <Route path='/*' element={<Books />} />
+                         <Route path='/users' element={<Users />} />
+                         <Route path='/borrows' element={<Borrows />} />
                     </Routes>
                </div>
           </div>
-     );
+     )
 }
-
 
 const Books = () => {
      return (
-          <div>Books Page</div>
-     );
-};
-
-const User = () => {
+          <div>
+               Books
+          </div>
+     )
+}
+const Users = () => {
      return (
-          <div>User Page</div>
-     );
-};
-
-const Borr = () => {
+          <div>
+               Users
+          </div>
+     )
+}
+const Borrows = () => {
      return (
-          <div>Borrows Page</div>
-     );
-};
+          <div>
+               Borrows
+          </div>
+     )
+}
 
-const Retu = () => {
-     return (
-          <div>Returns Page</div>
-     );
-};
-
-const Sett = () => {
-     return (
-          <div>Settings Page</div>
-     );
-};
-
-const Log = () => {
-     return (
-          <div>Logout Page</div>
-     );
-};
-
-export default Dashboard;
+export default Dashboard
