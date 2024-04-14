@@ -1,5 +1,6 @@
 import React from 'react';
 import "./sidebar-buttons.css"
+import { Link } from 'react-router-dom';
 
 const Sidebar_buttons = ({ title, selected, onClick, icon }) => {
      const isSelected = title === selected;
@@ -15,7 +16,8 @@ const Sidebar_buttons = ({ title, selected, onClick, icon }) => {
      });
 
      return (
-          <div className={buttonStyle} id='father' onClick={() => onClick(title)}>
+
+          <Link to={title} className={buttonStyle} id='father' onClick={() => onClick(title)}>
                <div className="h-12 p-4 rounded-lg justify-center items-center inline-flex">
                     <div className="w-6 h-6 relative flex-col justify-start items-start flex">
                          {iconWithColor}
@@ -24,7 +26,8 @@ const Sidebar_buttons = ({ title, selected, onClick, icon }) => {
                <div className={textStyle}>
                     {title}
                </div>
-          </div>
+          </Link >
+
      );
 };
 

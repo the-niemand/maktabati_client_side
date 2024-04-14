@@ -1,33 +1,22 @@
-import React from 'react';
-import Dashboard from './pages/Dashboard';
-import Auth from './pages/Auth';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import Dashboard from './pages/Dashboard'
 
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-
-
-const router = createBrowserRouter([
-  {
-    path: "maktabati_client_side/Dashboard/*",
-    element: (
-      <Dashboard />
-    ),
-  }, {
-    path: "maktabati_client_side/Login",
-    element: (
-      <Auth />
-    ),
-  }
-]);
-
-const App = () => {
+function App() {
   return (
-    <RouterProvider router={router} />
-  );
-};
+    <BrowserRouter>
+      <Routes>
+        <Route exact path='/maktabati_client_side/Adminpage/*' element={<Dashboard />} />
+        <Route exact path='/maktabati_client_side/Auth' element={<Auth />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+const Auth = () => {
+  return (
+    <div>
+      Login
+    </div>
+  )
+}
 
-export default App;
-
-
+export default App
