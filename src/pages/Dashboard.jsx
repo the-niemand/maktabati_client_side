@@ -19,22 +19,22 @@ const Dashboard = () => {
 
 const Books = () => {
      return (
-          <div>
-               Books
+          <div className='font-bold'>
+               Skarta7
           </div>
      )
 }
 const Users = () => {
      return (
-          <div>
-               Users
+          <div className='font-bold'>
+               will conquer the world
           </div>
      )
 }
 const Borrows = () => {
      return (
-          <div>
-               Borrows
+          <div className='font-bold'>
+               9lawa
           </div>
      )
 }
