@@ -11,7 +11,7 @@ const Dash_Books = () => {
      const [search_field_value, setSearch_field_value] = useState("")
 
      const clearInput = () => {
-          setSearch_field_value(''); // Reset the input field value to empty string
+          setSearch_field_value('');
      };
 
      return (
@@ -78,11 +78,11 @@ const Dash_Books = () => {
                     </div>
                     <div className='flex justify-between mt-10 '>
                          <div className='flex space-x-3'>
-                              <Dropdown />
-                              <Dropdown />
+                              <Dropdown name={"Category"} dropdownItems={["Fatasy", "Horror", "Romance", "Historical fiction", "Science fiction", "Mystery", "Thriller", "Autobiography"]} />
+                              <Dropdown name={"Sort by"} dropdownItems={["Release Date", "Price", "Trend"]} />
                          </div>
                          <div>
-                              <Dropdown />
+                              <Dropdown name={"Type"} dropdownItems={["Books", "Magazines ", "Newspapers"]} />
                          </div>
                     </div>
 
