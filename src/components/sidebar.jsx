@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import logo from '/open-book.png';
 import Sidebar_buttons from './subcomponents/sidebar_buttons';
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useCookies } from 'react-cookie';
+import { useLocation, useNavigate } from 'react-router-dom'
+import Cookies from 'universal-cookie';
 
 
 const Sidebar = () => {
 
+     const Cookie = new Cookies();
      const location = useLocation();
 
      const parts = location.pathname.split('/');
@@ -14,7 +15,6 @@ const Sidebar = () => {
      const nextSegment = parts[adminPageIndex + 1];
 
      const [selected, setSelected] = useState(nextSegment);
-     const [cookies, setCookies, removeCookie] = useCookies(["access_token"]);
 
      const navigate = useNavigate();
 
@@ -22,16 +22,20 @@ const Sidebar = () => {
           setSelected(title);
      };
 
+
      useEffect(() => {
-          if (!cookies.access_token) {
-               navigate("/maktabati_client_side/Auth/")
+          if (!Cookie.get("access_token")) {
+               navigate('/maktabati_client_side/Auth');
           }
           if (nextSegment === "logout") {
-               removeCookie('access_token');
-               window.localStorage.removeItem("userID");
-               navigate("/maktabati_client_side/Auth/")
+               Cookie.remove("access_token");
+               navigate('/maktabati_client_side/Auth');
+               window.localStorage.removeItem("userID")
           }
-     })
+     }, [nextSegment]);
+
+
+
 
 
      return (

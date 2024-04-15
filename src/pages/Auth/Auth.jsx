@@ -1,24 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import logo from '/open-book.png';
 import axios from 'axios';
-import { useCookies } from 'react-cookie';
+import Cookies from 'universal-cookie';
 import { useNavigate } from 'react-router';
 import load from '../../assets/loading.gif';
+
 
 const Auth = () => {
 
      const navigate = useNavigate()
+     const cookies = new Cookies();
 
-     useEffect(() => {
-          if (cookie.access_token) {
-               navigate("/maktabati_client_side/Adminpage/books")
-          }
-     }, [])
 
 
      const [email, setEmail] = useState("")
      const [password, setPassword] = useState("")
-     const [cookie, setCookie] = useCookies(["access_token"]);
 
      const [loading, setLoading] = useState(false)
 
@@ -34,9 +30,12 @@ const Auth = () => {
           setLoading(true);
           try {
                const res = await axios.post("https://maktabati-server-api.onrender.com/users/login", data)
-               setCookie("access_token", res.data.token),
-                    window.localStorage.setItem("userID", res.data.user_id),
-                    navigate("/maktabati_client_side/Adminpage/books")
+               cookies.set("access_token", res.data.token, {
+                    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+               })
+               window.localStorage.setItem("userID", res.data.user_id),
+               navigate("/maktabati_client_side/Adminpage/books")
+
           } catch (error) {
                console.log(error);
           } finally {

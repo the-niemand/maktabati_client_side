@@ -15,6 +15,8 @@ const Sidebar_buttons = ({ title, selected, onClick, icon }) => {
           strokeWidth: isSelected ? "2" : "1.5",
      });
 
+     
+
      return (
 
           <Link to={title} className={buttonStyle} id='father' onClick={() => onClick(title)}>

@@ -1,40 +1,19 @@
 import React from 'react'
 import Sidebar from '../components/sidebar'
 import { Routes, Route } from 'react-router-dom'
+import Dash_Books from './Dashboard_pages/Dash_Books';
+import Dash_Users from './Dashboard_pages/Dash_Users';
 
 const Dashboard = () => {
      return (
-          <div className='flex'>
+          <div className='flex '>
                <Sidebar />
-               <div>
+               <div className='w-screen flex flex-col px-16 py-10 space-y-8'>
                     <Routes>
-                         <Route path='/*' element={<Books />} />
-                         <Route path='/users' element={<Users />} />
-                         <Route path='/borrows' element={<Borrows />} />
+                         <Route path='/*' element={<Dash_Books />} />
+                         <Route path='/users' element={<Dash_Users />} />
                     </Routes>
                </div>
-          </div>
-     )
-}
-
-const Books = () => {
-     return (
-          <div className='font-bold'>
-               Skarta7
-          </div>
-     )
-}
-const Users = () => {
-     return (
-          <div className='font-bold'>
-               will conquer the world
-          </div>
-     )
-}
-const Borrows = () => {
-     return (
-          <div className='font-bold'>
-               9lawa
           </div>
      )
 }
