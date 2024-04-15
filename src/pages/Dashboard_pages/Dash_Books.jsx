@@ -3,6 +3,7 @@ import CurrentDateLogger from '../../components/Date';
 import addbook from '../../assets/literature.png'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../components/subcomponents/dropdown';
+import test_book from '../../assets/image 6.png'
 
 const Dash_Books = () => {
 
@@ -22,7 +23,7 @@ const Dash_Books = () => {
                </div>
                <div className='flex flex-col space-y-4'>
                     <div className='flex justify-end'>
-                         <Link className="w-fit bg-yellow-400 rounded-md py-2  px-4 flex justify-center items-center space-x-3 cursor-pointer hover:shadow-button transition ease-out duration-150">
+                         <Link to={"Create_Book"} className="w-fit bg-yellow-400 rounded-md py-2  px-4 flex justify-center items-center space-x-3 cursor-pointer hover:shadow-button transition ease-out duration-150">
                               <div className=" text-white text-base font-bold font-['DM Sans']">Add new book</div>
                               <img className="w-6 h-6" src={addbook} />
                          </Link>
@@ -82,11 +83,31 @@ const Dash_Books = () => {
                               <Dropdown name={"Sort by"} dropdownItems={["Release Date", "Price", "Trend"]} />
                          </div>
                          <div>
-                              <Dropdown name={"Type"} dropdownItems={["Books", "Magazines ", "Newspapers"]} />
+                              <Dropdown name={"Type"} dropdownItems={["Books", "Novel","Magazines ", "Newspapers"]} />
                          </div>
                     </div>
 
                </div >
+               <div className='mt-20 flex flex-wrap justify-between'>
+                    <div className='bg-white shadow-search rounded flex justify-between'>
+                         <div>
+                              <img className="rounded-tl rounded-bl " src={test_book} />
+                         </div>
+                         <div className='flex flex-col justify-center items-start w-52 py-2 pr-4 space-y-4'>
+                              <div>
+                                   <p className='text-black text-sm font-extra font-Poppins'>LOS COMPOS</p>
+                                   <p className='text-black text-[11px] font-bold font-Poppins' >Y LA MALDICION DE MIKECRACK</p>
+                              </div>
+                              <div className='text-justify text-black text-[11.10px] font-normal font-Poppins'>
+                                   La Peregrina es, sin duda, la perla sino más extraordinaria, más famosa de todos los tiempos.
+                              </div>
+                              <div>
+                                   <button className='bg-yellow-400 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200'>Details</button>
+                              </div>
+                         </div>
+                    </div>
+
+               </div>
 
           </>
      )
