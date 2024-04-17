@@ -39,7 +39,7 @@ const Sidebar = () => {
 
 
      return (
-          <div className="hidden md:flex h-screen bg-white shadow border border-stone-200  flex-col justify-between items-center py-8 px-5">
+          <div className="hidden md:flex h-screen bg-white shadow border sticky top-0 border-stone-200  flex-col justify-between items-center py-8 px-5">
                <div className='flex flex-col justify-between items-center space-y-16'>
                     <div className='flex justify-center items-center space-x-4'>
                          <img src={logo} className='w-10 h-10' alt="Logo" />
