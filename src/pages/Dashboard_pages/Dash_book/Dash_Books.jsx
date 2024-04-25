@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import CurrentDateLogger from '../../components/Date';
-import addbook from '../../assets/literature.png'
+import CurrentDateLogger from '../../../components/Date';
+import addbook from '../../../assets/literature.png'
 import { Link } from 'react-router-dom';
-import Dropdown from '../../components/subcomponents/dropdown';
-import test_book from '../../assets/image 6.png'
+import Dropdown from '../../../components/subcomponents/dropdown';
+import test_book from '../../../assets/image 6.png'
 
 const Dash_Books = () => {
 
