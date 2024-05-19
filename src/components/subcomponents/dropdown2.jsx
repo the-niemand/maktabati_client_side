@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const DropDown2 = () => {
+const DropDown2 = ({ onSelect }) => {
      const [isOpen, setIsOpen] = useState(false);
      const [selectedItems, setSelectedItems] = useState([]);
+
      const list = [
           "Fantasy",
           "Horror",
@@ -14,23 +15,18 @@ const DropDown2 = () => {
           "Autobiography"
      ];
 
-     const handleCheckboxChange = (event, item) => {
-          const isChecked = event.target.checked;
 
-          if (isChecked) {
-               setSelectedItems((prevItems) => [...prevItems, item]);
-          } else {
-               setSelectedItems((prevItems) =>
-                    prevItems.filter((selectedItem) => selectedItem !== item)
-               );
-          }
-     };
+     useEffect(() => {
+          onSelect(selectedItems)
+     }, [selectedItems])
+
+
 
      const handleDivClick = (item) => {
-          const newItem = item.toLowerCase().replace(" ", "-");
-          const labelElement = document.getElementById(newItem);
-          if (labelElement) {
-               labelElement.click();
+          if (selectedItems.includes(item)) {
+               setSelectedItems(selectedItems.filter((selectedItem) => selectedItem !== item));
+          } else {
+               setSelectedItems([...selectedItems, item])
           }
      };
 
@@ -39,10 +35,12 @@ const DropDown2 = () => {
                <label className="block text-gray-700 text-lg font-bold" htmlFor="copies">
                     Categories
                </label>
+
                <div
-                    className="relative cursor-pointer w-full p-3 border rounded flex gap-3 flex-wrap justify-start items-start"
+                    className="relative cursor-pointer w-full p-3 border rounded flex gap-3 flex-wrap justify-start items-center"
                     onClick={() => setIsOpen(!isOpen)}
                >
+
                     {selectedItems.length !== 0 ? (
                          selectedItems.map((selectedItem) => (
                               <div key={selectedItem} className="bg-gray-200 rounded py-2 px-4">
@@ -52,6 +50,7 @@ const DropDown2 = () => {
                     ) : (
                          <p className="text-black opacity-50">Select category(ies)...</p>
                     )}
+
                     <svg
                          xmlns="http://www.w3.org/2000/svg"
                          width="22"
@@ -69,26 +68,18 @@ const DropDown2 = () => {
                     </svg>
                </div>
 
+
+
                {isOpen && (
                     <div className="w-full p-4 border rounded flex flex-col gap-3 items-start h-40 overflow-y-auto">
                          {list.map((item) => (
                               <div
                                    key={item}
-                                   className="w-full cursor-pointer hover:bg-gray-200 rounded py-2 px-4"
+
+                                   className={`w-full cursor-pointer ${selectedItems.includes(item) && "bg-gray-200"} hover:bg-gray-200 rounded py-2 px-4`}
                                    onClick={() => handleDivClick(item)}
                               >
-                                   <input
-                                        type="checkbox"
-                                        name={item}
-                                        id={item.toLowerCase().replace(" ", "-")}
-                                        onChange={(event) => handleCheckboxChange(event, item)}
-                                   />
-                                   <label
-                                        className="ml-3 w-full cursor-pointer"
-                                        htmlFor={item.toLowerCase().replace(" ", "-")}
-                                   >
-                                        {item}
-                                   </label>
+                                   {item}
                               </div>
                          ))}
                     </div>

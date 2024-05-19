@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-const FileDrop = () => {
+const FileDrop = ({ onSelect }) => {
      const [file, setFile] = useState(null);
      const [isDragover, setIsDragover] = useState(false);
      const fileInputRef = useRef(null);
@@ -8,17 +8,20 @@ const FileDrop = () => {
      const handleFileChange = (event) => {
           const uploadedFile = event.target.files[0];
           setFile(uploadedFile);
+          onSelect(uploadedFile);
      };
 
      const dropHandler = (event) => {
           event.preventDefault();
           const droppedFile = event.dataTransfer.files[0];
           setFile(droppedFile);
+          onSelect(droppedFile);
           setIsDragover(false);
      };
 
      const deleteFile = () => {
           setFile(null);
+          onSelect(null);
      };
 
      const handleDragOver = (event) => {
@@ -63,7 +66,7 @@ const FileDrop = () => {
                     />
                </div>
 
-               {/* Displaying file and delete button */}
+
                {file && (
                     <div className="w-full px-5 py-1 flex justify-between items-center border rounded">
                          <div>{file.name}</div>
