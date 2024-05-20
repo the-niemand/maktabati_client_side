@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import Dropdown from '../../../components/subcomponents/dropdown';
 import loadingSpinner from "../../../assets/loading.gif";
 import bin from '../../../assets/bin.png'
+import Pagination from './Pagination'
 
 
 const Dash_Books = () => {
@@ -17,6 +18,11 @@ const Dash_Books = () => {
     const [Messagedeletion, setMessagedeletion] = useState('');
     const [action, setAction] = useState(null);
     const [target, setTarget] = useState(null);
+
+    const [currentPage, setCurrentPage] = useState(1)
+    const [postsperpage, setPostsperpage] = useState(8)
+    const lastPostIndex = currentPage * postsperpage
+    const firstPostIndex = lastPostIndex - postsperpage
 
     useEffect(() => {
         const handleActionEvent = async () => {
@@ -219,22 +225,21 @@ const Dash_Books = () => {
             <div className='mt-20 flex flex-wrap justify-center gap-10'>
                 {loading ? (
                     <div className='w-full h-full flex items-center justify-center mt-32'>
-                        <div className=' w-[180px] h-[180px]  bg-white shadow-lg flex items-center justify-center'>
+                        <div className='w-[180px] h-[180px] bg-white shadow-lg flex items-center justify-center'>
                             <img src={loadingSpinner} alt="Loading" width={100} />
                         </div>
                     </div>
                 ) : (
-                    booksData && (
-                        booksData.map((book, index) => (
-                            <div key={index} className='bg-white shadow-search rounded flex justify-between overflow-hidden gap-4 h-50'>
+                    <>
+                        {booksData && booksData.slice(firstPostIndex, lastPostIndex).map((book, index) => (
+                            <div key={index} className='bg-white shadow-search rounded flex justify-between overflow-hidden gap-4 h-[220px]'>
                                 <div className='w-[150px] h-full border-r border-neutral-200'>
-                                    <img className="object-cover rounded-tl rounded-bl w-full h-full" src={`${book.image}`} alt={book.title} />
+                                    <img className="object-cover rounded-tl rounded-bl w-full h-full" src={book.image} alt={book.title} />
                                 </div>
-
                                 <div className='w-fit flex flex-col justify-evenly items-start py-6 pr-8'>
                                     <div>
-                                        <p className='text-black text-sm font-extra font-Poppins w-[100px] '>{book.title}</p>
-                                        <p className='text-black text-[10px] font-medium font-Poppins w-[100px] '>By {handleList(book.authors)}</p>
+                                        <p className='text-black text-sm font-extra font-Poppins w-[100px]'>{book.title}</p>
+                                        <p className='text-black text-[10px] font-medium font-Poppins w-[100px]'>By {handleList(book.authors)}</p>
                                     </div>
                                     <div className='flex w-full justify-between items-center'>
                                         <div className='w-fit text-justify text-black text-[11.10px] font-normal font-Poppins'>
@@ -244,22 +249,28 @@ const Dash_Books = () => {
                                             {book.copies} copies
                                         </div>
                                     </div>
-
                                     <div className='w-[100px] text-justify text-black text-[11.10px] font-normal font-Poppins truncate' title={handleList(book.categories)}>
                                         {handleList(book.categories)}
                                     </div>
                                     <div className='flex gap-2'>
-                                        <button className='w-fit bg-yellow-400 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200'>Edit</button>
-                                        <button className='w-fit bg-red-600 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200' onClick={() => { handleBookDeletion(book._id) }}>delete</button>
+                                        <button className='w-fit bg-yellow-400 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200'>
+                                            Edit
+                                        </button>
+                                        <button className='w-fit bg-red-600 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200' onClick={() => { handleBookDeletion(book._id) }}>
+                                            Delete
+                                        </button>
                                     </div>
                                 </div>
-
                             </div>
-                        ))
-                    )
+                        ))}
+                        <div className='w-full flex items-center justify-center'>
+                            <Pagination totalPosts={booksData.length} postsPerPage={postsperpage} setCurrentPage={setCurrentPage} currentPage={currentPage} />
+                        </div>
+                    </>
                 )}
 
-            </div>
+
+            </div >
         </>
     );
 }
