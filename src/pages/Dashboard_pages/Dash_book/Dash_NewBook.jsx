@@ -79,7 +79,10 @@ const Dash_NewBook = () => {
                     console.error('No image selected');
                     return;
                }
+
+               formData.status = "exist"
                setCreatingStatus("loading")
+
                const formDataToSubmit = new FormData();
 
                formDataToSubmit.append('file', new File([selectedImage], imageName));
@@ -104,6 +107,41 @@ const Dash_NewBook = () => {
                setStatusMessage(error.response.data.message)
           }
      };
+
+
+
+     const handleUpcommingbook = async () => {
+          try {
+               if (!selectedImage) {
+                    console.error('No image selected');
+                    return;
+               }
+               formData.status = "upcomming"
+               setCreatingStatus("loading")
+               const formDataToSubmit = new FormData();
+
+               formDataToSubmit.append('file', new File([selectedImage], imageName));
+               formDataToSubmit.append('data', JSON.stringify(formData));
+               const fetch_url = `${URL}books/createBook`;
+
+               if (fetch_url) {
+                    const response = await axios.post(fetch_url, formDataToSubmit, {
+                         headers: {
+                              'Content-Type': 'multipart/form-data',
+                         },
+                    });
+
+                    if (response.status == 201) {
+                         setCreatingStatus("valid")
+                    }
+               }
+
+
+          } catch (error) {
+               setCreatingStatus("unvalide")
+               setStatusMessage(error.response.data.message)
+          }
+     }
 
      const handleAuthors = (e) => {
           if (e.target.value.length !== 0) {
@@ -214,9 +252,12 @@ const Dash_NewBook = () => {
                                         </div>
                                    </div>
                                    <FileDrop onSelect={handleImageSelect} /> {/* FileDrop component to select image */}
-                                   <div className="w-full">
+                                   <div className="w-full flex gap-2">
                                         <button onClick={handleCreatingbook} className='w-full px-6 border-2 border-yellow-400 bg-yellow-400 text-white py-1.5 rounded-md hover:bg-transparent hover:text-yellow-400 font-semibold transition ease-out duration-250'>
                                              Create
+                                        </button>
+                                        <button onClick={handleUpcommingbook} className='w-full px-6 border-2 border-yellow-400 bg-yellow-400 text-white py-1.5 rounded-md hover:bg-transparent hover:text-yellow-400 font-semibold transition ease-out duration-250'>
+                                             upcomming
                                         </button>
                                    </div>
                               </form>

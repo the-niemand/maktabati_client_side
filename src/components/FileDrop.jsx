@@ -49,7 +49,7 @@ const FileDrop = ({ onSelect }) => {
                     onClick={handleBrowseClick}
                >
                     {file ? (
-                         <div className="text-yellow-500 text-xl font-bold">{file.name}</div>
+                         <div className="text-yellow-500 text-xl font-bold w-[80%] flex items-center justify-center overflow-hidden overflow-ellipsis whitespace-nowrap">{file.name}</div>
                     ) : (
                          <div className="flex flex-col items-center justify-center">
                               <p className="text-yellow-500 text-[16px] font-bold">Drag and Drop File Here</p>
@@ -68,8 +68,8 @@ const FileDrop = ({ onSelect }) => {
 
 
                {file && (
-                    <div className="w-full px-5 py-1 flex justify-between items-center border rounded">
-                         <div>{file.name}</div>
+                    <div className="px-5 w-full py-1 flex justify-between items-center border rounded  ">
+                         <div className='w-[75%] overflow-hidden overflow-ellipsis whitespace-nowrap'>{file.name}</div>
                          <div
                               className="h-8 w-8 rounded-sm flex items-center justify-center cursor-pointer"
                               onClick={deleteFile}

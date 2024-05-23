@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import Dropdown from '../../../components/subcomponents/dropdown';
 import loadingSpinner from "../../../assets/loading.gif";
 import bin from '../../../assets/bin.png'
+import release from '../../../assets/unboxing.png'
 import Pagination from './Pagination'
 
 
@@ -16,6 +17,7 @@ const Dash_Books = () => {
     const [booksData, setBooksData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [Messagedeletion, setMessagedeletion] = useState('');
+    const [MessageReleasing, setMessageReleasing] = useState('');
     const [action, setAction] = useState(null);
     const [target, setTarget] = useState(null);
 
@@ -30,16 +32,28 @@ const Dash_Books = () => {
                 await new Promise(resolve => setTimeout(resolve, 800));
                 handleClose()
             }
+            if (MessageReleasing === "Book has been released") {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                handleClose()
+            }
         };
 
         handleActionEvent();
-    }, [Messagedeletion]);
+    }, [Messagedeletion , MessageReleasing]);
 
     const handleClose = () => {
         setAction(null);
         setTarget(null);
         setMessagedeletion("")
+        setMessageReleasing('')
     }
+
+    const handleBookRelease = (id) => {
+        setAction("release")
+        setTarget(id)
+    }
+
+
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -56,7 +70,7 @@ const Dash_Books = () => {
         };
         fetchBooks();
 
-    }, [URL]);
+    }, [URL , MessageReleasing]);
 
     const clearInput = () => {
         setSearchFieldValue('');
@@ -66,6 +80,21 @@ const Dash_Books = () => {
         e.preventDefault();
     };
 
+
+    const releaseBook = async (id) => {
+        try {
+            const newData = {
+                status: "exist"
+            }
+            const fetchUrl = `${URL}books/updateBooksById/${id}`;
+            const response = await axios.put(fetchUrl, newData);
+            if (response) {
+                setMessageReleasing("Book has been released")
+            }
+        } catch (error) {
+            console.log('Error fetching books:', error);
+        }
+    }
     const deleteBook = async (id) => {
         try {
             const fetchUrl = `${URL}books/deleteBookById/${id}`;
@@ -118,6 +147,49 @@ const Dash_Books = () => {
                     <div className="flex gap-3">
                         <button className="w-fit px-10 border-2 border-red-600 bg-red-600 text-white py-1.5   rounded-md hover:bg-transparent hover:text-red-600 font-semibold transition ease-out duration-250" onClick={() => { deleteBook(target) }}>
                             Delete
+                        </button>
+                        <button className="w-fit px-10 border-[2px] border-gray-400 bg-gray-200 text-gray-800 font-bold py-1.5   rounded-md hover:bg-gray-300 font-semibold transition ease-out duration-250" onClick={handleClose}>
+                            cancel
+                        </button>
+                    </div>
+                </div>
+            )
+        } else if (action == "release") {
+            return (
+                <div className="flex flex-col gap-3 items-center justify-center">
+                    <div className="absolute top-2 right-2" onClick={handleClose} >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#282828" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=" opacity-50 cursor-pointer hover:opacity-100 transition ease-out duration-150"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+
+                    </div>
+
+                    <div className="flex flex-col gap-6 items-center">
+
+                        <div className="flex flex-col gap-1 items-center" >
+                            <div className="flex flex-col gap-2 items-center">
+                                <img src={release} width={"60"} alt="trash" />
+                                <h1 className="text-[25px] font-Poppins ">Release Book</h1>
+                            </div>
+
+                            <div>
+                                <h4 className="font-medium font-Poppins text-gray-600">This action can not be undone. Are you sure you want to Release this Book ? </h4>
+                            </div>
+                        </div>
+
+                        <div
+                            className="text-green-500 font-bold"
+                            style={{ visibility: Messagedeletion ? 'visible' : 'hidden' }}
+                        >
+                            {Messagedeletion}
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div className="flex gap-3">
+                        <button className="w-fit px-10 border-2 border-green-500 bg-green-500 text-white py-1.5   rounded-md hover:bg-transparent hover:text-green-600 font-semibold transition ease-out duration-250" onClick={() => { releaseBook(target) }}>
+                            Release
                         </button>
                         <button className="w-fit px-10 border-[2px] border-gray-400 bg-gray-200 text-gray-800 font-bold py-1.5   rounded-md hover:bg-gray-300 font-semibold transition ease-out duration-250" onClick={handleClose}>
                             cancel
@@ -259,6 +331,13 @@ const Dash_Books = () => {
                                         <button className='w-fit bg-red-600 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200' onClick={() => { handleBookDeletion(book._id) }}>
                                             Delete
                                         </button>
+                                        {book.status === "upcomming" && (
+                                            <button className='w-fit bg-green-600 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200' onClick={() => {
+                                                handleBookRelease(book._id)
+                                            }}>
+                                                release
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
