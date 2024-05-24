@@ -17,8 +17,7 @@ const Dash_Borrows = () => {
                     setLoading(true)
                     const fetch_url = `${URL}reservations/fetchReservations`;
                     const response = await axios.get(fetch_url);
-                    console.log(response);
-                    setBorrowsData(response.data.data);
+                    setBorrowsData(response.data);
                } catch (error) {
                     console.log('Error fetching users:', error);
                } finally {
@@ -50,8 +49,7 @@ const Dash_Borrows = () => {
                          </div>
 
                     ) : (
-                         // <TableData data={borrowsData} />
-                         <div>table</div>
+                         <TableData data={borrowsData} />
                     )}
                </div>
           </div>
