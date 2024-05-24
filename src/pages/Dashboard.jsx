@@ -6,6 +6,8 @@ import Dash_Users from './Dashboard_pages/Dash_user/Dash_Users';
 import Dash_NewBook from './Dashboard_pages/Dash_book/Dash_NewBook';
 import Dash_NewUser from './Dashboard_pages/Dash_user/Dash_NewUser';
 import Dash_UpdateUser from './Dashboard_pages/Dash_user/Dash_UpdateUser';
+import Dash_Borrows from './Dashboard_pages/Dash_Borrows/Dash_Borrows';
+import Dash_NewBorrow from './Dashboard_pages/Dash_Borrows/Dash_NewBorrow';
 
 const Dashboard = () => {
      return (
@@ -20,6 +22,9 @@ const Dashboard = () => {
                          <Route path='/users' element={<Dash_Users />} />
                          <Route path='/users/Create_User' element={<Dash_NewUser />} />
                          <Route path='/users/Update_User/:id' element={<Dash_UpdateUser />} />
+
+                         <Route path='/borrows' element={<Dash_Borrows />} />
+                         <Route path='/borrows/Create_borrow' element={<Dash_NewBorrow />} />
 
                     </Routes>
                </div>
