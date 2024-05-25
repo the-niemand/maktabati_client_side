@@ -26,6 +26,7 @@ const DropBooks = ({ onSelect }) => {
           if (value.length > 0) {
                setIsOpen(true);
           } else {
+               onSelect(null);
                setIsOpen(false);
           }
      };
@@ -50,7 +51,9 @@ const DropBooks = ({ onSelect }) => {
 
                <div className={` ${brand && isOpen ? "block" : "hidden"} max-h-40 overflow-y-scroll text-zinc-800 p-3 rounded border mt-2 flex space-x-4`}>
                     <ul className="w-full">
-                         {filteredBrands().map((item, index) => (
+                         {filteredBrands().length === 0 ? (
+                              <li className='text-red-500 font-Poppins font-bold'>nothing found</li>
+                         ) : (filteredBrands().map((item, index) => (
                               <li
                                    className={`cursor-pointer hover:bg-gray-200 rounded py-2 px-4 truncate w-full ${item.copies === 0 ? 'opacity-50 pointer-events-none' : ''}`}
                                    key={index}
@@ -63,15 +66,9 @@ const DropBooks = ({ onSelect }) => {
                               >
                                    {item.title}{item.copies === 0 && <p className='text-red-500 font-Poppins text-[13px] font-bold inline ml-5'>book out of stock</p>}
                               </li>
-                         ))}
+                         )))}
 
-                         <li className="cursor-pointer hover:bg-gray-200 rounded py-2 px-4 truncate w-full" onClick={() => {
-                              setBrand("other");
-                              onSelect("other");
-                              setIsOpen(false);
-                         }}>
-                              Other...
-                         </li>
+
 
                     </ul>
                </div>

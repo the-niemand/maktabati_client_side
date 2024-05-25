@@ -10,6 +10,7 @@ import DropUsers from "../../../components/DropUsers";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './calender.css';
+import { Toaster, toast } from 'sonner'
 
 const Dash_NewBorrow = () => {
 
@@ -61,6 +62,13 @@ const Dash_NewBorrow = () => {
 
      const handleCreatingCar = async () => {
           try {
+
+               const { userId, bookId, expectedDeliveryDate } = formData;
+               if (!userId || !bookId || !expectedDeliveryDate) {
+                    toast.error('all fields are required exept author');
+                    return;
+               }
+
                setCreatingStatus("loading");
                const response = await axios.post(`${URL}reservations/createReservation`, formData);
                if (response.status === 201 || response.status === 200) {
@@ -126,7 +134,7 @@ const Dash_NewBorrow = () => {
                                              {creatingStatus === "unvalide" && (
                                                   <div className='flex flex-col gap-4 items-center justify-center'>
                                                        <img src={unvalide} width="60" alt="unvalide" />
-                                                       <h3 className='text-red-500 font-Poppins font-regular'>You cannot create a new Car because {statusMessage}</h3>
+                                                       <h3 className='text-red-500 font-Poppins font-regular'>You cannot create a new Borrow because {statusMessage}</h3>
                                                        <button
                                                             onClick={() => { setStatusMessage(""); setCreatingStatus(""); }}
                                                             className="w-full px-6 border-2 border-red-600 bg-red-600 text-white py-1.5 rounded-md hover:bg-transparent hover:text-red-600 font-semibold transition ease-out duration-250"
@@ -138,7 +146,7 @@ const Dash_NewBorrow = () => {
                                              {creatingStatus === "valid" && (
                                                   <div className='flex flex-col gap-4 items-center justify-center'>
                                                        <img src={valide} width="60" alt="valide" />
-                                                       <h3 className='text-green-600 font-Poppins font-regular'>Car created successfully</h3>
+                                                       <h3 className='text-green-600 font-Poppins font-regular'>Borrow created successfully</h3>
                                                   </div>
                                              )}
                                         </div>
@@ -147,6 +155,7 @@ const Dash_NewBorrow = () => {
                          </div>
                     </div>
                </div>
+               <Toaster expand={false} position="bottom-right" richColors />
           </>
      );
 };

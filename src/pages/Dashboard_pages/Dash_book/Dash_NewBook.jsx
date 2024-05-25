@@ -7,6 +7,7 @@ import axios from "axios";
 import load from '../../../assets/loading.gif';
 import valide from '../../../assets/valide.gif'
 import unvalide from '../../../assets/unvalide.gif'
+import { Toaster, toast } from 'sonner'
 
 const Dash_NewBook = () => {
      const URL = import.meta.env.APP_API_URL;
@@ -74,9 +75,10 @@ const Dash_NewBook = () => {
 
      const handleCreatingbook = async () => {
           try {
-
-               if (!selectedImage) {
-                    console.error('No image selected');
+               // Validate if any required fields are empty
+               const { title, type,  categories, copies } = formData;
+               if (!title || !type || !categories || !copies || !selectedImage) {
+                    toast.error('all fields are required');
                     return;
                }
 
@@ -100,22 +102,21 @@ const Dash_NewBook = () => {
                          setCreatingStatus("valid")
                     }
                }
-
-
           } catch (error) {
                setCreatingStatus("unvalide")
                setStatusMessage(error.response.data.message)
           }
      };
 
-
-
      const handleUpcommingbook = async () => {
           try {
-               if (!selectedImage) {
-                    console.error('No image selected');
+               // Validate if any required fields are empty
+               const { title, type, authors, categories, copies } = formData;
+               if (!title || !type || authors.length === 0 || !categories || !copies || !selectedImage) {
+                    toast.error('all fields are required');
                     return;
                }
+
                formData.status = "upcomming"
                setCreatingStatus("loading")
                const formDataToSubmit = new FormData();
@@ -135,13 +136,15 @@ const Dash_NewBook = () => {
                          setCreatingStatus("valid")
                     }
                }
-
-
           } catch (error) {
                setCreatingStatus("unvalide")
                setStatusMessage(error.response.data.message)
           }
-     }
+     };
+
+
+
+
 
      const handleAuthors = (e) => {
           if (e.target.value.length !== 0) {
@@ -294,6 +297,7 @@ const Dash_NewBook = () => {
                          </div>
                     </div>
                </div>
+               <Toaster expand={false} position="bottom-right" richColors />
           </>
      );
 };

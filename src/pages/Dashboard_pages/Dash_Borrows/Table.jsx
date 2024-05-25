@@ -3,6 +3,8 @@ import { useTable, useSortBy, usePagination } from "react-table";
 import bin from '../../../assets/bin.png';
 import ReactDatePicker from "react-datepicker";
 import axios from "axios";
+import borrowBook from "../../../assets/book.png";
+import { Toaster, toast } from 'sonner'
 
 const TableData = ({ data }) => {
   const URL = import.meta.env.APP_API_URL;
@@ -11,15 +13,17 @@ const TableData = ({ data }) => {
   const [target, setTarget] = useState(null);
   const [selectedSize, setSelectedSize] = useState(10);
   const [actualDeliveryDate, setActualDeliveryDate] = useState()
+  const [expectedDeliveryDate, setExpectedDeliveryDate] = useState()
   const [messageReturning, setMessageReturning] = useState(null)
   const [messageDeleting, setMessageDeleting] = useState(null)
+  const weeks = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
   const today = new Date(Date.now());
   const [startDate, setStartDate] = useState(today);
 
   useEffect(() => {
     const handleActionEvent = async () => {
-      if (messageReturning == "Book has been returned successfuly" || messageDeleting == "Borrowing has been deleted successfuly") {
+      if (messageReturning == "Book has been returned successfuly" || "Book has been borrowed successfuly" || "Expected delivery date has been changed successfuly" || messageDeleting == "Borrowing has been deleted successfuly") {
         await new Promise(resolve => setTimeout(resolve, 800));
         handleClose()
       }
@@ -71,9 +75,10 @@ const TableData = ({ data }) => {
     book: borrow.book.title,
     pickupDate: new Date(borrow.reservation.pickupDate).toLocaleDateString('en-GB'),
     expected_deliveryDate: new Date(borrow.reservation.expected_deliveryDate).toLocaleDateString('en-GB'),
+    actual_deliveryDate: borrow.reservation.actual_deliveryDate ? new Date(borrow.reservation.actual_deliveryDate).toLocaleDateString('en-GB') : "...",
     status: borrow.reservation.status,
-    id: borrow.reservation._id
-  })), [borrowsData]);
+    id: borrow.reservation._id,
+  })), [borrowsData, messageReturning, messageDeleting]);
 
   const columns = useMemo(
     () => [
@@ -81,6 +86,7 @@ const TableData = ({ data }) => {
       { Header: "Book", accessor: "book" },
       { Header: "Pickup Date", accessor: "pickupDate" },
       { Header: "Expected Delivery Date", accessor: "expected_deliveryDate" },
+      { Header: "Actual Delivery Date", accessor: "actual_deliveryDate" },
       { Header: "Status", accessor: "status" },
     ],
     []
@@ -135,13 +141,41 @@ const TableData = ({ data }) => {
   const handleClose = () => {
     setAction(null);
     setTarget(null);
+    setMessageReturning(null)
+    setMessageDeleting(null)
   };
 
   const handleReturnBook = async () => {
     try {
-      const newData = { actual_deliveryDate: actualDeliveryDate, status: "returned" };
+
+      const newData = { actual_deliveryDate: new Date(Date.now()), status: "returned" };
       await axios.put(`${URL}reservations/updateReservationById/${target}`, newData);
       setMessageReturning("Book has been returned successfuly")
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  const handleBorrowBook = async () => {
+    try {
+      const newData = { expected_deliveryDate: expectedDeliveryDate, status: "borrowed" };
+      await axios.put(`${URL}reservations/updateReservationById/${target}`, newData);
+      setMessageReturning("Book has been borrowed successfuly")
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleEditBook = async () => {
+    try {
+      if(!expectedDeliveryDate){
+        toast.error('all fields are required');
+        return ;
+      }
+      const newData = { expected_deliveryDate: expectedDeliveryDate };
+      await axios.put(`${URL}reservations/updateReservationById/${target}`, newData);
+      setMessageReturning("Expected delivery date has been changed successfuly")
     } catch (error) {
       console.log(error);
     }
@@ -151,14 +185,151 @@ const TableData = ({ data }) => {
     try {
       await axios.delete(`${URL}reservations/deleteReservationById/${target}`);
       setMessageDeleting("Borrowing has been deleted successfuly");
-      setBorrowsData(prevBorrowsData => 
+      setBorrowsData(prevBorrowsData =>
         prevBorrowsData.filter(borrow => borrow.reservation._id !== target)
       );
     } catch (error) {
       console.log(error);
     }
   }
+
+
   const handleActions = () => {
+    if (action == "edit") {
+      return (
+        <div className="flex flex-col gap-4 items-center justify-center">
+          <div className="absolute top-2 right-2" onClick={handleClose}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#282828"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-50 cursor-pointer hover:opacity-100 transition ease-out duration-150"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+
+          <div className="flex flex-col gap-4 items-center justify-center">
+
+            <div className="font-medium font-Poppins text-gray-600 flex flex-col items-center">
+              <p className="">This action cannot be undone.</p>
+              Are you sure you want to change expected delivery date
+            </div>
+
+            <div className='flex flex-col gap-2'>
+              <div className="w-full px-2 py-2 bg-white rounded-md shadow-search justify-start items-center flex space-x-4">
+                <div className="flex-1">
+                  <ReactDatePicker
+                    selected={expectedDeliveryDate}
+                    onChange={setExpectedDeliveryDate}
+                    name="expected_deliveryDate"
+                    dateFormat="dd/MM/yyyy"
+                    minDate={today}
+                    maxDate={weeks}
+                    placeholderText="DD/MM/YYYY"
+                  />
+                </div>
+              </div>
+              <div className="text-[10px] font-Poppins font-bold">
+              </div>
+            </div>
+
+
+
+
+
+
+            <div>
+              {messageReturning && (
+                <p className="text-green-600 font-Poppins text-[13px] font-bold">
+                  {messageReturning}
+                </p>
+              )}
+            </div>
+          </div>
+          <div
+            onClick={handleEditBook}
+            className="flex cursor-pointer items-center justify-center w-full px-6 border-2 border-green-600 bg-green-600 text-white py-1.5 rounded-md hover:bg-transparent hover:text-green-600 font-semibold transition ease-out duration-250"
+          >
+            Save
+          </div>
+        </div>)
+    }
+    if (action === "borrow") {
+      return (
+        <div className="flex flex-col gap-4 items-center justify-center">
+          <div className="absolute top-2 right-2" onClick={handleClose}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#282828"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-50 cursor-pointer hover:opacity-100 transition ease-out duration-150"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+
+          <div className="flex flex-col gap-4 items-center justify-center">
+
+            <div className="font-medium font-Poppins text-gray-600 flex flex-col items-center">
+              <p className="">This action cannot be undone.</p>
+              Are you sure this reservation is borrowed ?
+            </div>
+
+            <div className='flex flex-col gap-2'>
+              <div className="w-full px-2 py-2 bg-white rounded-md shadow-search justify-start items-center flex space-x-4">
+                <div className="flex-1">
+                  <ReactDatePicker
+                    selected={expectedDeliveryDate}
+                    onChange={setExpectedDeliveryDate}
+                    name="expected_deliveryDate"
+                    dateFormat="dd/MM/yyyy"
+                    minDate={today}
+                    maxDate={weeks}
+                    placeholderText="DD/MM/YYYY"
+                  />
+                </div>
+              </div>
+              <div className="text-[10px] font-Poppins font-bold">
+                if you did not enter a date , the expected delivery date won't change
+              </div>
+            </div>
+
+
+
+
+
+
+            <div>
+              {messageReturning && (
+                <p className="text-green-600 font-Poppins text-[13px] font-bold">
+                  {messageReturning}
+                </p>
+              )}
+            </div>
+          </div>
+          <div
+            onClick={handleBorrowBook}
+            className="flex cursor-pointer items-center justify-center w-full px-6 border-2 border-green-600 bg-green-600 text-white py-1.5 rounded-md hover:bg-transparent hover:text-green-600 font-semibold transition ease-out duration-250"
+          >
+            Save
+          </div>
+        </div>)
+    }
     if (action === "return") {
       return (
         <div className="flex flex-col gap-4 items-center justify-center">
@@ -180,25 +351,10 @@ const TableData = ({ data }) => {
             </svg>
           </div>
           <div className="flex flex-col gap-2 items-center justify-center">
-            <div className="flex gap-2 items-center justify-center">
-              <div className="shadow appearance-none border rounded w-full p-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <ReactDatePicker
-                  selected={actualDeliveryDate}
-                  onChange={(date) => setActualDeliveryDate(date)}
-                  name="expected_deliveryDate"
-                  dateFormat="dd/MM/yyyy"
-                  minDate={startDate}
-                  autoComplete={false}
-                  placeholderText="DD/MM/YYYY"
-                />
-              </div>
-              <div
-                className="flex w-[35%] items-center justify-center cursor-pointer border-2 border-gray-500 bg-gray-400 text-white py-1 rounded-md hover:bg-transparent hover:text-gray-400 font-semibold transition ease-out duration-250"
-                onClick={() => setActualDeliveryDate(today)}
-              >
-                Today
-              </div>
-            </div>
+            <dic className="font-medium font-Poppins text-gray-600 flex flex-col items-center">
+              <p className="">This action cannot be undone.</p>
+              Are you sure  this Borrow is returned ?
+            </dic>
             <div>
               {messageReturning && (
                 <p className="text-green-600 font-Poppins text-[13px] font-bold">
@@ -236,7 +392,7 @@ const TableData = ({ data }) => {
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </div>
-  
+
           <div className="flex flex-col gap-6 items-center">
             <div className="flex flex-col gap-1 items-center">
               <div className="flex flex-col gap-2 items-center">
@@ -274,7 +430,7 @@ const TableData = ({ data }) => {
       );
     }
   };
-  
+
 
   return (
     <div className="flex flex-col gap-6 mt-6">
@@ -314,18 +470,39 @@ const TableData = ({ data }) => {
                   ))}
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">
                     <div className="flex justify-center gap-5">
-                      <div onClick={() => handleIconsClick('return', row.original.id)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition ease-out duration-200 cursor-pointer opacity-60 hover:opacity-100 feather feather-corner-down-left">
-                          <polyline points="9 10 4 15 9 20"></polyline>
-                          <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
-                        </svg>
-                      </div>
+
+                      {row.original.status == "reserved" && (
+                        <div onClick={() => handleIconsClick('borrow', row.original.id)}>
+                          <img src={borrowBook} className="w-[25px] md:shrink-0 h-[25px] transition ease-out duration-200 cursor-pointer opacity-60 hover:opacity-100" />
+                        </div>
+
+                      )}
+                      {row.original.status ==  "borrowed" && (
+                        <div onClick={() => handleIconsClick('edit', row.original.id)}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=" transition ease-out duration-200 cursor-pointer opacity-60 hover:opacity-100 feather feather-edit">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </div>
+                      )}
+
+                      {row.original.status != "returned" && (
+                        <div onClick={() => handleIconsClick('return', row.original.id)}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition ease-out duration-200 cursor-pointer opacity-60 hover:opacity-100 feather feather-corner-down-left">
+                            <polyline points="9 10 4 15 9 20"></polyline>
+                            <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                          </svg>
+                        </div>
+                      )}
+
                       <div onClick={() => handleIconsClick('delete', row.original.id)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition ease-out duration-200 cursor-pointer opacity-60 hover:opacity-100 feather feather-trash">
                           <polyline points="3 6 5 6 21 6"></polyline>
                           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                         </svg>
                       </div>
+
+
                     </div>
                   </td>
                 </tr>
@@ -354,6 +531,7 @@ const TableData = ({ data }) => {
           </ul>
         </nav>
       </div>
+      <Toaster expand={false} position="bottom-right" richColors />
     </div>
   );
 };

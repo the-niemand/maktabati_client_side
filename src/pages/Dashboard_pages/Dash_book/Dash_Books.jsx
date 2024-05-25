@@ -8,6 +8,7 @@ import loadingSpinner from "../../../assets/loading.gif";
 import bin from '../../../assets/bin.png'
 import release from '../../../assets/unboxing.png'
 import Pagination from './Pagination'
+import NoFound from '../../../assets/no-results.png'
 
 
 const Dash_Books = () => {
@@ -15,12 +16,15 @@ const Dash_Books = () => {
 
     const [searchFieldValue, setSearchFieldValue] = useState('');
     const [booksData, setBooksData] = useState(null);
+    const [filteredBooks, setFilteredBooks] = useState();
+
     const [loading, setLoading] = useState(true);
     const [Messagedeletion, setMessagedeletion] = useState('');
     const [MessageReleasing, setMessageReleasing] = useState('');
     const [action, setAction] = useState(null);
     const [target, setTarget] = useState(null);
-
+    const [category, setCategory] = useState()
+    const [type, setType] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const [postsperpage, setPostsperpage] = useState(8)
     const lastPostIndex = currentPage * postsperpage
@@ -39,7 +43,7 @@ const Dash_Books = () => {
         };
 
         handleActionEvent();
-    }, [Messagedeletion , MessageReleasing]);
+    }, [Messagedeletion, MessageReleasing]);
 
     const handleClose = () => {
         setAction(null);
@@ -52,8 +56,6 @@ const Dash_Books = () => {
         setAction("release")
         setTarget(id)
     }
-
-
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -70,7 +72,43 @@ const Dash_Books = () => {
         };
         fetchBooks();
 
-    }, [URL , MessageReleasing]);
+    }, [URL, MessageReleasing]);
+
+    useEffect(() => {
+        if (booksData) {
+            let newDataFiltered = booksData;
+            if (category) {
+                newDataFiltered = newDataFiltered.filter((book) => book.categories.includes(category));
+            }
+            if (type) {
+                if (type === "All") {
+                    newDataFiltered = newDataFiltered.filter((book) =>
+                        ["All", "Books", "Novel", "Magazines"].includes(book.type)
+                    );
+                } else {
+                    newDataFiltered = newDataFiltered.filter((book) => book.type === type);
+                }
+            }
+            setFilteredBooks(newDataFiltered);
+        }
+    }, [booksData, category, type]);
+
+
+
+    const hanldeSearchBook = async () => {
+        try {
+            setLoading(true);
+            const data = {
+                searchValue: searchFieldValue
+            }
+            const response = await axios.post(`${URL}books/fetchFilteredBooks`, data);
+            setBooksData(response.data.data);
+        } catch (error) {
+            console.log('Error:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const clearInput = () => {
         setSearchFieldValue('');
@@ -276,6 +314,7 @@ const Dash_Books = () => {
                             </div>
                         )}
                         <button
+                            onClick={hanldeSearchBook}
                             type="submit"
                             className="w-fit px-6 border-2 border-yellow-400 bg-yellow-400 text-white py-1.5 rounded-md hover:bg-transparent hover:text-yellow-400 font-semibold transition ease-out duration-250"
                         >
@@ -286,11 +325,10 @@ const Dash_Books = () => {
                 </div>
                 <div className='flex justify-between mt-10'>
                     <div className='flex space-x-3'>
-                        <Dropdown name={"Category"} dropdownItems={["Fantasy", "Horror", "Romance", "Historical fiction", "Science fiction", "Mystery", "Thriller", "Autobiography"]} />
-                        <Dropdown name={"Sort by"} dropdownItems={["Release Date", "Price", "Trend"]} />
+                        <Dropdown onSelect={setCategory} name={"Category"} dropdownItems={["Fantasy", "Horror", "Romance", "Historical fiction", "Science fiction", "Mystery", "Thriller", "Autobiography"]} />
                     </div>
                     <div>
-                        <Dropdown name={"Type"} dropdownItems={["Books", "Novel", "Magazines", "Newspapers"]} />
+                        <Dropdown onSelect={setType} name={"Type"} dropdownItems={['All', "Books", "Novel", "Magazines"]} />
                     </div>
                 </div>
             </div>
@@ -303,7 +341,7 @@ const Dash_Books = () => {
                     </div>
                 ) : (
                     <>
-                        {booksData && booksData.slice(firstPostIndex, lastPostIndex).map((book, index) => (
+                        {filteredBooks && filteredBooks.length > 0 ? filteredBooks.slice(firstPostIndex, lastPostIndex).map((book, index) => (
                             <div key={index} className='bg-white shadow-search rounded flex justify-between overflow-hidden gap-4 h-[220px]'>
                                 <div className='w-[150px] h-full border-r border-neutral-200'>
                                     <img className="object-cover rounded-tl rounded-bl w-full h-full" src={book.image} alt={book.title} />
@@ -325,9 +363,11 @@ const Dash_Books = () => {
                                         {handleList(book.categories)}
                                     </div>
                                     <div className='flex gap-2'>
-                                        <button className='w-fit bg-yellow-400 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200'>
-                                            Edit
-                                        </button>
+                                        <Link to={`Update_Book/${book._id}`} >
+                                            <button className='w-fit bg-yellow-400 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200'>
+                                                Edit
+                                            </button>
+                                        </Link>
                                         <button className='w-fit bg-red-600 rounded-sm text-white text-[12px] px-2 py-1 font-bold opacity-70 hover:opacity-100 transition ease-out duration-200' onClick={() => { handleBookDeletion(book._id) }}>
                                             Delete
                                         </button>
@@ -341,9 +381,14 @@ const Dash_Books = () => {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        )) : (
+                            <div className='flex flex-col gap-8 items-center justify-between'>
+                                <img src={NoFound} className='w-28' srcset="" />
+                                <p className='text-center text-black text-[20px] font-bold font-Poppins'>No Books Found</p>
+                            </div>
+                        )}
                         <div className='w-full flex items-center justify-center'>
-                            <Pagination totalPosts={booksData.length} postsPerPage={postsperpage} setCurrentPage={setCurrentPage} currentPage={currentPage} />
+                            <Pagination totalPosts={filteredBooks ? filteredBooks.length : 0} postsPerPage={postsperpage} setCurrentPage={setCurrentPage} currentPage={currentPage} />
                         </div>
                     </>
                 )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const Dropdown = ({ name, dropdownItems }) => {
+const Dropdown = ({ name, dropdownItems, onSelect }) => {
      const [isOpen, setIsOpen] = useState(false);
      const [selected, setSelected] = useState(name);
 
@@ -17,14 +17,12 @@ const Dropdown = ({ name, dropdownItems }) => {
      };
 
      useEffect(() => {
-          // Add event listener to detect clicks outside the dropdown
           document.addEventListener("mousedown", handleOutsideClick);
 
           return () => {
-               // Clean up event listener on component unmount
                document.removeEventListener("mousedown", handleOutsideClick);
           };
-     }, []); // Empty dependency array to run this effect only once on mount
+     }, []);
 
      const splitIndex = 4;
 
@@ -59,7 +57,8 @@ const Dropdown = ({ name, dropdownItems }) => {
                                    key={index}
                                    onClick={() => {
                                         setSelected(item);
-                                        setIsOpen(false); // Close dropdown after selection
+                                        onSelect(item)
+                                        setIsOpen(false);
                                    }}
                               >
                                    {item}
@@ -73,6 +72,7 @@ const Dropdown = ({ name, dropdownItems }) => {
                                    key={index + splitIndex}
                                    onClick={() => {
                                         setSelected(item);
+                                        onSelect(item)
                                         setIsOpen(false); // Close dropdown after selection
                                    }}
                               >

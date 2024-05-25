@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-const DropDown2 = ({ onSelect }) => {
+const DropDown2 = ({ onSelect , preSelectedItems }) => {
      const [isOpen, setIsOpen] = useState(false);
-     const [selectedItems, setSelectedItems] = useState([]);
+     const [selectedItems, setSelectedItems] = useState(preSelectedItems || []);
 
      const list = [
           "Fantasy",
@@ -12,7 +12,8 @@ const DropDown2 = ({ onSelect }) => {
           "Science fiction",
           "Mystery",
           "Thriller",
-          "Autobiography"
+          "Autobiography",
+          'Educative'
      ];
 
 
@@ -41,7 +42,7 @@ const DropDown2 = ({ onSelect }) => {
                     onClick={() => setIsOpen(!isOpen)}
                >
 
-                    {selectedItems.length !== 0 ? (
+                    {selectedItems && selectedItems.length !== 0 ? (
                          selectedItems.map((selectedItem) => (
                               <div key={selectedItem} className="bg-gray-200 rounded py-2 px-4">
                                    {selectedItem}
